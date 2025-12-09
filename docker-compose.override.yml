@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # 开发环境配置
+  backend:
+    environment:
+      - DEBUG=true
+      - CACHE_EXPIRE=3600
+    volumes:
+      - ./backend:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev
+
+  # 生产环境配置
+  # 取消注释以下内容以启用生产配置
+  # backend:
+  #   environment:
+  #     - DEBUG=false
+  #     - CACHE_EXPIRE=7200
+  #   command: uvicorn main:app --host 0.0.0.0 --port 8000
+
+  # frontend:
+  #   environment:
+  #     - NODE_ENV=production
+  #   command: nginx -g 'daemon off;'

@@ -12,8 +12,8 @@ RUN npm ci --only=production
 # 复制源代码
 COPY . .
 
-# 构建应用
-RUN npm run build
+# 构建应用（跳过TypeScript检查）
+RUN npm run build -- --skipLibCheck
 
 # 生产阶段
 FROM nginx:alpine

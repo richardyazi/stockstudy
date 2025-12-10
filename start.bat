@@ -1,4 +1,5 @@
 @echo off
+chcp 65001 >nul
 echo 🚀 启动股票趋势练习网站...
 
 REM 检查Docker是否安装

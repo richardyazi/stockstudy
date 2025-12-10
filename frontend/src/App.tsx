@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -34,7 +34,9 @@ function App() {
     setError(null)
     
     try {
-      const response = await fetch(`/api/stock/${stockCode}?dividing_date=${dividingDate}`)
+      // 在开发环境中使用完整URL，在生产环境中使用相对路径
+      const baseUrl = import.meta.env.DEV ? 'http://localhost:8000' : ''
+      const response = await fetch(`${baseUrl}/api/stock/${stockCode}?dividing_date=${dividingDate}`)
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)

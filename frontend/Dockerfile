@@ -6,14 +6,14 @@ WORKDIR /app
 # 复制依赖文件
 COPY package*.json ./
 
-# 安装依赖
-RUN npm ci --only=production
+# 安装所有依赖（包括开发依赖，用于构建）
+RUN npm install
 
 # 复制源代码
 COPY . .
 
-# 构建应用（跳过TypeScript检查）
-RUN npm run build -- --skipLibCheck
+    # 构建应用
+    RUN npm run build
 
 # 生产阶段
 FROM nginx:alpine

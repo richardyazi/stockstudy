@@ -1,3 +1,5 @@
 {
-    "codingcopilot.enableCompletionLanguage": {}
+    "codingcopilot.enableCompletionLanguage": {
+        "scmInput": false
+    }
 }

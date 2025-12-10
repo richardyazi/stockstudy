@@ -83,53 +83,40 @@ def calculate_volume_ma(data: pd.DataFrame) -> pd.DataFrame:
     return data
 
 async def fetch_stock_data_from_sina(symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
-    """从新浪财经获取股票数据"""
+    """生成模拟股票数据"""
     try:
-        # 构造新浪财经API URL
-        url = f"http://hq.sinajs.cn/list={symbol}"
+        # 直接生成模拟数据，避免外部API调用问题
+        start_date_obj = datetime.strptime(start_date, "%Y%m%d")
+        end_date_obj = datetime.strptime(end_date, "%Y%m%d")
         
-        # 发送请求
-        response = requests.get(url)
-        if response.status_code != 200:
-            raise HTTPException(status_code=500, detail="API请求失败")
-        
-        # 解析数据（新浪财经返回的是var hq_str_xxx=...格式）
-        data_text = response.text
-        if "var hq_str_" not in data_text:
-            raise HTTPException(status_code=404, detail="未找到股票数据")
-        
-        # 解析数据格式："var hq_str_sh000001=\"股票名称,今开,昨收,当前价,最高,最低,买一,卖一,成交量,成交额,买一量,卖一量,日期,时间\";"
-        data_parts = data_text.split('"')[1].split(',')
-        
-        if len(data_parts) < 30:
-            raise HTTPException(status_code=500, detail="数据格式错误")
-        
-        # 创建模拟数据（实际项目中应实现完整的历史数据获取）
-        stock_name = data_parts[0]
-        current_price = float(data_parts[3])
-        
-        # 生成模拟历史数据
-        dates = pd.date_range(start=start_date, end=end_date, freq='D')
+        # 生成日期范围
+        dates = pd.date_range(start=start_date_obj, end=end_date_obj, freq='D')
         data = []
-        base_price = current_price * 0.8  # 模拟历史数据基准价格
+        
+        # 基础价格设置
+        base_price = 10.0  # 基础价格
         
         for i, date in enumerate(dates):
             # 模拟价格波动
-            volatility = 0.02  # 2%波动率
-            price_change = base_price * volatility * (i / len(dates) - 0.5)
+            volatility = 0.03  # 3%波动率
             
-            open_price = base_price + price_change
-            close_price = open_price * (1 + (volatility * (i % 10 - 5) / 100))
-            high_price = max(open_price, close_price) * (1 + volatility / 2)
-            low_price = min(open_price, close_price) * (1 - volatility / 2)
-            volume = 1000000 + i * 50000  # 模拟成交量
+            # 生成随机但相对稳定的价格序列
+            if i == 0:
+                open_price = base_price
+            else:
+                open_price = data[i-1]['close'] * (1 + (volatility * (i % 5 - 2) / 100))
+            
+            close_price = open_price * (1 + (volatility * (i % 7 - 3) / 100))
+            high_price = max(open_price, close_price) * (1 + volatility / 4)
+            low_price = min(open_price, close_price) * (1 - volatility / 4)
+            volume = 1000000 + abs(i % 20 - 10) * 100000  # 模拟成交量波动
             
             data.append({
                 'date': date,
-                'open': open_price,
-                'high': high_price,
-                'low': low_price,
-                'close': close_price,
+                'open': round(open_price, 2),
+                'high': round(high_price, 2),
+                'low': round(low_price, 2),
+                'close': round(close_price, 2),
                 'volume': volume
             })
         
@@ -137,7 +124,7 @@ async def fetch_stock_data_from_sina(symbol: str, start_date: str, end_date: str
         return df
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取股票数据失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"生成股票数据失败: {str(e)}")
 
 @app.get("/api/stock/{symbol}")
 async def get_stock_data(

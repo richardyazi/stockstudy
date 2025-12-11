@@ -1,18 +1,52 @@
 version: '3.8'
 
 services:
-  # 前端服务（开发模式）
+  # Redis服务（开发环境）
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  # 后端服务（开发环境）
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_HOST=redis
+      - DEBUG=true
+      - CACHE_EXPIRE=3600
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - redis
+    restart: unless-stopped
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  # 前端服务（开发环境）
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
     ports:
       - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - HOST=0.0.0.0
+      - PORT=3000
+      - CHOKIDAR_USEPOLLING=true
     volumes:
       - ./frontend:/app
       - /app/node_modules
     depends_on:
       - backend
     restart: unless-stopped
-    environment:
-      - CHOKIDAR_USEPOLLING=true
+    command: npm run dev -- --host 0.0.0.0
+
+volumes:
+  redis_data:

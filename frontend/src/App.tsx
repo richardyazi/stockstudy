@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label'
 import { KLineChart } from '@/components/charts/KLineChart'
 import { VolumeChart } from '@/components/charts/VolumeChart'
 import { KDJChart } from '@/components/charts/KDJChart'
+import { MACDChart } from '@/components/charts/MACDChart'
 import { StockStats } from '@/components/StockStats'
 import { formatDate } from '@/lib/utils'
 
@@ -28,6 +29,9 @@ function App() {
   const [stockData, setStockData] = useState<StockData[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [selectedIndicator, setSelectedIndicator] = useState('volume') // 默认显示成交量
+  const [showMA, setShowMA] = useState(true)
+  const [showVolumeMA, setShowVolumeMA] = useState(true)
 
   const fetchStockData = async () => {
     setLoading(true)
@@ -103,6 +107,77 @@ function App() {
                 </Button>
               </div>
             </div>
+            
+            {/* 技术指标选择 */}
+            {stockData.length > 0 && (
+              <div className="mt-6 pt-6 border-t border-border">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="space-y-2">
+                    <Label>技术指标</Label>
+                    <div className="flex space-x-2">
+                      <Button
+                        variant={selectedIndicator === 'volume' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSelectedIndicator('volume')}
+                      >
+                        成交量
+                      </Button>
+                      <Button
+                        variant={selectedIndicator === 'kdj' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSelectedIndicator('kdj')}
+                      >
+                        KDJ
+                      </Button>
+                      <Button
+                        variant={selectedIndicator === 'macd' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSelectedIndicator('macd')}
+                      >
+                        MACD
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>移动平均线</Label>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="show-ma"
+                        checked={showMA}
+                        onChange={(e) => setShowMA(e.target.checked)}
+                        className="w-4 h-4"
+                      />
+                      <Label htmlFor="show-ma" className="text-sm">显示MA</Label>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>成交量指标</Label>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="show-volume-ma"
+                        checked={showVolumeMA}
+                        onChange={(e) => setShowVolumeMA(e.target.checked)}
+                        className="w-4 h-4"
+                      />
+                      <Label htmlFor="show-volume-ma" className="text-sm">显示MAVOL</Label>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>图表设置</Label>
+                    <div className="flex space-x-2">
+                      <Button variant="outline" size="sm" onClick={() => {
+                        // 重置缩放功能
+                        window.location.reload()
+                      }}>
+                        重置
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -121,9 +196,18 @@ function App() {
                 <CardDescription>历史价格走势和技术指标分析</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <KLineChart data={historicalData} height={400} />
-                <VolumeChart data={historicalData} height={200} />
-                <KDJChart data={historicalData} height={200} />
+                <KLineChart data={historicalData} height={400} showMA={showMA} />
+                
+                {/* 动态显示技术指标 */}
+                {selectedIndicator === 'volume' && (
+                  <VolumeChart data={historicalData} height={200} showVolumeMA={showVolumeMA} />
+                )}
+                {selectedIndicator === 'kdj' && (
+                  <KDJChart data={historicalData} height={200} />
+                )}
+                {selectedIndicator === 'macd' && (
+                  <MACDChart data={historicalData} height={200} />
+                )}
               </CardContent>
             </Card>
 
@@ -134,9 +218,18 @@ function App() {
                 <CardDescription>未来趋势预测和技术指标分析</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <KLineChart data={futureData} height={400} />
-                <VolumeChart data={futureData} height={200} />
-                <KDJChart data={futureData} height={200} />
+                <KLineChart data={futureData} height={400} showMA={showMA} />
+                
+                {/* 动态显示技术指标 */}
+                {selectedIndicator === 'volume' && (
+                  <VolumeChart data={futureData} height={200} showVolumeMA={showVolumeMA} />
+                )}
+                {selectedIndicator === 'kdj' && (
+                  <KDJChart data={futureData} height={200} />
+                )}
+                {selectedIndicator === 'macd' && (
+                  <MACDChart data={futureData} height={200} />
+                )}
               </CardContent>
             </Card>
 

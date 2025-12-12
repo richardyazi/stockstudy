@@ -9,7 +9,8 @@ import {
   Tooltip,
   Legend,
   Line,
-  ReferenceArea
+  ReferenceArea,
+  Rectangle
 } from 'recharts'
 
 interface VolumeChartProps {

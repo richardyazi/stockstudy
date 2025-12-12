@@ -1,0 +1,42 @@
+---
+description: 
+alwaysApply: false
+enabled: true
+updatedAt: 2025-12-12T02:51:47.542Z
+provider: 
+---
+
+# 股票趋势练习网站 - 快速参考
+
+## 核心信息
+- **项目类型**: 全栈股票技术分析工具
+- **技术栈**: React + TypeScript + FastAPI + Redis + Docker
+- **主要功能**: 股票K线图、技术指标分析、趋势预测
+- **开发端口**: 前端3000、后端8000、Redis6379
+
+## 关键文件
+- 前端: `frontend/package.json`, `frontend/vite.config.ts`
+- 后端: `backend/main.py`, `backend/requirements.txt`
+- 容器: `docker-compose.dev.yml`
+
+## 常用命令
+- 启动: `docker-compose -f docker-compose.dev.yml up -d`
+- 停止: `docker-compose -f docker-compose.dev.yml down`
+- 前端开发: `cd frontend && npm run dev`
+- 后端开发: `cd backend && uvicorn main:app --reload`
+
+## 环境变量
+- `VITE_API_URL=http://localhost:8000`
+- `REDIS_HOST=redis`
+- `DEBUG=true`
+
+## API端点
+- 股票数据: `/api/stock/*`
+- 健康检查: `/api/health`
+
+## 依赖管理
+- 前端: npm (React 18.2.0, Vite 4.5.0, TypeScript 5.2.2)
+- 后端: pip (FastAPI 0.104.1, Pandas 2.1.4, AKShare 1.17.52)
+
+## 数据流程
+AKShare → FastAPI → Redis → React

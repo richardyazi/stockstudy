@@ -1,0 +1,101 @@
+---
+description: 
+alwaysApply: true
+enabled: true
+updatedAt: 2025-12-12T02:51:37.338Z
+provider: 
+---
+
+# 股票趋势练习网站 - 开发环境规则
+
+## 项目概述
+本项目是一个股票技术分析工具，使用React + FastAPI + Redis技术栈构建的全栈Web应用。
+
+## 技术架构
+
+### 前端技术栈
+- **框架**: React 18.2.0 + TypeScript 5.2.2
+- **构建工具**: Vite 4.5.0
+- **UI组件**: Tailwind CSS + Radix UI
+- **图表库**: Recharts 2.12.0
+- **HTTP客户端**: Axios 1.6.0
+- **样式工具**: Tailwind CSS 3.3.5 + PostCSS
+- **开发端口**: localhost:3000
+
+### 后端技术栈
+- **框架**: FastAPI 0.104.1
+- **运行时**: Uvicorn 0.24.0
+- **数据处理**: Pandas 2.1.4
+- **缓存**: Redis 5.0.1
+- **数据源**: AKShare 1.17.52 (股票数据API)
+- **开发端口**: localhost:8000
+
+### 基础设施
+- **容器化**: Docker + Docker Compose
+- **缓存服务**: Redis (localhost:6379)
+- **网络**: stockstudy-dev
+
+## 项目结构
+```
+i:\stockstudy\
+├── frontend/          # React前端应用
+│   ├── src/          # 源代码
+│   ├── package.json  # 前端依赖配置
+│   └── vite.config.ts # Vite构建配置
+├── backend/           # FastAPI后端应用
+│   ├── main.py      # 后端主入口
+│   └── requirements.txt # Python依赖配置
+├── docker-compose.dev.yml # 开发环境容器编排
+└── .codebuddy/       # CodyBuddy规则目录
+```
+
+## 开发环境配置
+
+### 环境变量
+- `VITE_API_URL=http://localhost:8000` - 前端API请求地址
+- `REDIS_HOST=redis` - Redis主机地址
+- `REDIS_PORT=6379` - Redis端口
+- `DEBUG=true` - 开发调试模式
+- `CACHE_EXPIRE=3600` - 缓存过期时间(秒)
+
+### 常用命令
+- 启动开发环境: `docker-compose -f docker-compose.dev.yml up -d`
+- 停止开发环境: `docker-compose -f docker-compose.dev.yml down`
+- 安装前端依赖: `cd frontend && npm install`
+- 安装后端依赖: `cd backend && pip install -r requirements.txt`
+
+## API接口规范
+- 股票数据API: `/api/stock/*`
+- 健康检查: `/api/health`
+- 数据缓存时间: 1小时
+
+## 数据流向
+AKShare数据源 → FastAPI后端 → Redis缓存 → React前端展示
+
+## 开发工作流
+
+### 启动顺序
+1. 启动Redis服务
+2. 启动后端服务(FastAPI)
+3. 启动前端服务(React)
+
+### 健康检查
+- Redis: `redis-cli ping`
+- 后端: `curl http://localhost:8000/api/health`
+- 前端: `curl http://localhost:3000`
+
+## 常见问题解决
+- 端口冲突: 检查3000、8000、6379端口是否被占用
+- 依赖问题: 删除node_modules/__pycache__后重新安装
+- 网络问题: 检查AKShare API访问和Redis连接
+- 构建错误: 检查TypeScript类型和Vite配置
+
+## 优化建议
+- 前端: 代码分割、懒加载、图表组件优化
+- 后端: Redis缓存、异步处理、响应压缩
+- 开发工具: 热重载、类型检查、ESLint集成
+
+## 文件优先级
+- 高优先级: package.json, requirements.txt, docker-compose.dev.yml, vite.config.ts, main.py
+- 中优先级: README.md, DEVELOPMENT.md, *.bat, *.tsx, *.py
+- 低优先级: node_modules/**, __pycache__/**, *.log

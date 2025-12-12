@@ -60,7 +60,17 @@ export function MACDChart({ data, height = 200 }: MACDChartProps) {
       
       // 计算DEA（DIFF的9日EMA）
       if (index >= 33) {
-        const prevDEAs = macdData.slice(index - 8, index).map(d => d.diff).filter(d => d !== undefined)
+        // 使用原始数据计算DEA，避免循环引用
+        const prevData = data.slice(Math.max(0, index - 8), index)
+        const prevDEAs = prevData.map((d, i) => {
+          if (i >= 25) {
+            const prevEma12 = data.slice(Math.max(0, i - 11), i + 1).reduce((sum, d) => sum + d.close, 0) / 12
+            const prevEma26 = data.slice(Math.max(0, i - 25), i + 1).reduce((sum, d) => sum + d.close, 0) / 26
+            return prevEma12 - prevEma26
+          }
+          return undefined
+        }).filter(d => d !== undefined)
+        
         if (prevDEAs.length >= 8) {
           newItem.dea = prevDEAs.reduce((sum, d) => sum + d, 0) / 9
           newItem.macd = (newItem.diff - newItem.dea) * 2
@@ -68,7 +78,13 @@ export function MACDChart({ data, height = 200 }: MACDChartProps) {
       }
     }
     
-    // 检测零轴穿越信号
+    return newItem
+  })
+
+  // 检测零轴穿越信号（在macdData完全定义后）
+  const macdDataWithSignals = macdData.map((item, index) => {
+    const newItem = { ...item }
+    
     if (index > 0 && newItem.diff !== undefined && macdData[index - 1].diff !== undefined) {
       const prevDiff = macdData[index - 1].diff
       const currentDiff = newItem.diff
@@ -87,7 +103,7 @@ export function MACDChart({ data, height = 200 }: MACDChartProps) {
   })
 
   // 过滤出有MACD数据的数据点
-  const filteredData = macdData.filter(item => item.macd !== undefined)
+  const filteredData = macdDataWithSignals.filter(item => item.macd !== undefined)
 
   if (filteredData.length === 0) {
     return (

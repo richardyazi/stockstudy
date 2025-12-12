@@ -9,6 +9,9 @@ services:
     volumes:
       - redis_data:/data
     restart: unless-stopped
+    environment:
+      - REDIS_PASSWORD=
+      - REDIS_DATABASE=0
 
   # 后端服务（开发环境）
   backend:
@@ -19,14 +22,23 @@ services:
       - "8000:8000"
     environment:
       - REDIS_HOST=redis
+      - REDIS_PORT=6379
       - DEBUG=true
       - CACHE_EXPIRE=3600
+      - LOG_LEVEL=DEBUG
     volumes:
       - ./backend:/app
+      - /app/__pycache__
     depends_on:
       - redis
     restart: unless-stopped
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # 前端服务（开发环境）
   frontend:
@@ -40,13 +52,25 @@ services:
       - HOST=0.0.0.0
       - PORT=3000
       - CHOKIDAR_USEPOLLING=true
+      - VITE_API_URL=http://localhost:8000
     volumes:
       - ./frontend:/app
       - /app/node_modules
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     restart: unless-stopped
     command: npm run dev -- --host 0.0.0.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
 volumes:
   redis_data:
+
+networks:
+  default:
+    name: stockstudy-dev

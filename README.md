@@ -28,37 +28,43 @@
 ## 🚀 快速开始
 
 ### 环境要求
-- Docker 20.10+
-- Docker Compose 2.0+
+- **Node.js** 18.0+ (开发环境)
+- **Python** 3.8+ (开发环境)
+- **Docker** 20.10+ (生产环境，可选)
+- **Docker Compose** 2.0+ (生产环境，可选)
 
-### 一键启动
+### 方式一：开发模式（推荐）
 
 ```bash
-# 克隆项目
-git clone <项目地址>
-cd stockstudy
+# 设置开发环境
+setup-dev.bat
 
-# 启动服务
-./start.sh
+# 启动开发服务
+start-dev.bat
 ```
 
-### 手动启动
+### 方式二：Docker开发模式
 
 ```bash
-# 启动所有服务
+# 使用Docker Compose启动开发环境
+docker-compose -f docker-compose.dev.yml up
+```
+
+### 方式三：生产模式
+
+```bash
+# 一键启动生产环境
+start.bat
+
+# 或手动启动
 docker-compose up --build -d
-
-# 查看服务状态
-docker-compose ps
-
-# 查看日志
-docker-compose logs -f
 ```
 
 ### 访问地址
 - **前端应用**: http://localhost:3000
 - **后端API**: http://localhost:8000
 - **API文档**: http://localhost:8000/docs
+- **开发文档**: 查看 [DEVELOPMENT.md](./DEVELOPMENT.md)
 
 ## 📊 使用说明
 
@@ -94,20 +100,18 @@ stockstudy/
 
 ## 🔧 开发指南
 
-### 前端开发
+详细开发指南请参考 [DEVELOPMENT.md](./DEVELOPMENT.md)
+
+### 快速开发
 
 ```bash
+# 前端开发
 cd frontend
-npm install
 npm run dev
-```
 
-### 后端开发
-
-```bash
+# 后端开发
 cd backend
-pip install -r requirements.txt
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+python main_simple.py
 ```
 
 ### 环境变量配置
@@ -115,6 +119,8 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 后端服务支持以下环境变量：
 - `REDIS_HOST`: Redis主机地址 (默认: localhost)
 - `REDIS_PORT`: Redis端口 (默认: 6379)
+- `DEBUG`: 调试模式 (默认: false)
+- `CACHE_EXPIRE`: 缓存过期时间 (默认: 3600秒)
 
 ## 📈 API接口
 

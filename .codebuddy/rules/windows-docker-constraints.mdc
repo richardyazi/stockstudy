@@ -1,0 +1,74 @@
+---
+description: 
+alwaysApply: true
+enabled: true
+updatedAt: 2025-12-12T04:11:02.831Z
+provider: 
+---
+
+# Windows + Docker 环境约束规则
+
+## 环境概况
+- **操作系统**: Windows (win32)
+- **Shell环境**: PowerShell (C:\WINDOWS\System32\WindowsPowerShell\v1)
+- **项目部署方式**: Docker Compose容器化部署
+
+## 命令执行约束
+
+### ⚠️ 禁用命令（在Windows主机上会失败）
+以下命令在本地Windows环境下不可用，因为前端和后端服务运行在Docker容器内：
+
+```bash
+# 前端相关（无效）
+cd i:/stockstudy/frontend && npm install
+node --version
+npm --version
+npm run dev
+
+# Unix风格命令（无效）
+curl -s http://localhost:3000 | head -n 10
+curl http://localhost:8000/api/health
+```
+
+### ✅ 有效命令（使用Windows PowerShell语法）
+```powershell
+# Docker管理
+docker-compose -f docker-compose.dev.yml up -d
+docker-compose -f docker-compose.dev.yml down
+docker-compose -f docker-compose.dev.yml restart
+
+# 日志查看
+docker logs stockstudy-frontend-1 --tail 20
+docker logs stockstudy-backend-1 --tail 20
+docker logs stockstudy-redis-1 --tail 10
+
+# 服务检查（Windows PowerShell语法）
+Invoke-WebRequest -Uri "http://localhost:3000" -UseBasicParsing
+Invoke-WebRequest -Uri "http://localhost:8000/api/health" -UseBasicParsing
+
+# 容器交互
+docker exec -it stockstudy-frontend-1 sh
+docker exec -it stockstudy-backend-1 sh
+```
+
+## 开发环境说明
+
+### 依赖管理
+- **前端依赖**: 在Docker容器构建时自动安装，无需本地Node.js环境
+- **后端依赖**: 在Docker容器构建时自动安装，无需本地Python环境
+- **环境一致性**: 所有服务容器化运行，确保开发环境一致性
+
+### 故障排除优先顺序
+1. 首先使用`docker ps`检查容器状态
+2. 使用`docker logs [容器名]`查看服务日志
+3. 使用`docker-compose restart [服务名]`重启有问题的服务
+4. 最后考虑重建容器`docker-compose down && docker-compose up -d`
+
+### 文件编辑指南
+- 代码文件可在Windows环境中直接编辑
+- 编辑后容器会自动检测文件变化并热重载
+- 如需重建容器，使用`docker-compose up -d --build`
+
+## 性能优化
+- Windows文件系统挂载可能影响性能，重要文件变更后考虑重建容器
+- 开发时避免频繁的容器重建操作，优先使用容器内命令进行依赖管理

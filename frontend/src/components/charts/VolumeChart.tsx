@@ -9,7 +9,7 @@ import {
   Tooltip,
   Legend,
   Line,
-  ReferenceArea,
+  // ReferenceArea,
   Rectangle
 } from 'recharts'
 
@@ -20,7 +20,7 @@ interface VolumeChartProps {
 }
 
 const VolumeBar = (props: any) => {
-  const { x, y, width, height, open, close, volume } = props
+  const { x, y, width, height, open, close } = props
   
   const isGrowing = close >= open
   const fillColor = isGrowing ? '#ef4444' : '#10b981'

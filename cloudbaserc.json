@@ -1,0 +1,42 @@
+{
+  "$schema": "https://framework-1258016615.tcloudbaseapp.com/schema/latest.json",
+  "version": "2.0",
+  "envId": "stockstudy-env",
+  "region": "ap-shanghai",
+  "functionRoot": "./backend-cloudbase",
+  "functions": [
+    {
+      "name": "stockstudy-backend",
+      "timeout": 60,
+      "envVariables": {
+        "TCB_ENV_ID": "stockstudy-env",
+        "NODE_ENV": "production"
+      },
+      "runtime": "Nodejs18.15",
+      "memory": 512,
+      "handler": "index.handler",
+      "installDependency": true,
+      "ignore": [
+        "node_modules",
+        "node_modules/**/*",
+        ".git"
+      ]
+    }
+  ],
+  "hosting": {
+    "stockstudy-frontend": {
+      "public": "./frontend/dist",
+      "ignore": [
+        "node_modules",
+        "node_modules/**/*",
+        ".git"
+      ],
+      "rewriteRules": [
+        {
+          "source": "^((?!\\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|json|txt|xml|map)$).)*$",
+          "target": "/index.html"
+        }
+      ]
+    }
+  }
+}

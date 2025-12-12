@@ -39,8 +39,8 @@ function App() {
     
     try {
       // 在开发环境中使用完整URL，在生产环境中使用相对路径
-      const baseUrl = import.meta.env.DEV ? 'http://localhost:8000' : ''
-      const response = await fetch(`${baseUrl}/api/stock/${stockCode}?dividing_date=${dividingDate}`)
+      const baseUrl = (import.meta as any).env?.DEV ? 'http://localhost:8000' : '/api'
+      const response = await fetch(`${baseUrl}/stock/${stockCode}?dividing_date=${dividingDate}`)
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)

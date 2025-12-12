@@ -62,7 +62,7 @@ export function MACDChart({ data, height = 200 }: MACDChartProps) {
       if (index >= 33) {
         // 使用原始数据计算DEA，避免循环引用
         const prevData = data.slice(Math.max(0, index - 8), index)
-        const prevDEAs = prevData.map((d, i) => {
+        const prevDEAs = prevData.map((_, i) => {
           if (i >= 25) {
             const prevEma12 = data.slice(Math.max(0, i - 11), i + 1).reduce((sum, d) => sum + d.close, 0) / 12
             const prevEma26 = data.slice(Math.max(0, i - 25), i + 1).reduce((sum, d) => sum + d.close, 0) / 26

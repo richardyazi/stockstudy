@@ -1,7 +1,7 @@
 {
   "$schema": "https://framework-1258016615.tcloudbaseapp.com/schema/latest.json",
   "version": "2.0",
-  "envId": "stockstudy-env",
+  "envId": "stockstudy-7gg0qgesca10330c",
   "region": "ap-shanghai",
   "functionRoot": "./backend-cloudbase",
   "functions": [
@@ -9,7 +9,7 @@
       "name": "stockstudy-backend",
       "timeout": 60,
       "envVariables": {
-        "TCB_ENV_ID": "stockstudy-env",
+        "TCB_ENV_ID": "stockstudy-7gg0qgesca10330c",
         "NODE_ENV": "production"
       },
       "runtime": "Nodejs18.15",

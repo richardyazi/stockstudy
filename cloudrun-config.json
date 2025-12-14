@@ -1,0 +1,20 @@
+{
+  "serverName": "stockstudy-backend",
+  "serverType": "container",
+  "serverConfig": {
+    "OpenAccessTypes": ["PUBLIC"],
+    "Cpu": 0.25,
+    "Mem": 0.5,
+    "MinNum": 1,
+    "MaxNum": 2,
+    "PolicyDetails": [
+      {
+        "PolicyType": "cpu",
+        "PolicyThreshold": 60
+      }
+    ],
+    "Port": 8000,
+    "EnvParams": "{\"NODE_ENV\": \"production\", \"TCB_ENV_ID\": \"stockstudy-7gg0qgesca10330c\"}",
+    "InternalAccess": "true"
+  }
+}

@@ -38,9 +38,10 @@ function App() {
     setError(null)
     
     try {
-      // 在开发环境中使用完整URL，在生产环境中使用相对路径
-      const baseUrl = (import.meta as any).env?.DEV ? 'http://localhost:8000' : '/api'
-      const response = await fetch(`${baseUrl}/stock/${stockCode}?dividing_date=${dividingDate}`)
+      // 使用环境变量配置的API地址，并添加/api前缀
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+      const apiPath = baseUrl.includes('localhost') ? '' : '/api'
+      const response = await fetch(`${baseUrl}${apiPath}/stock/${stockCode}?dividing_date=${dividingDate}`)
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)

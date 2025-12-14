@@ -217,9 +217,9 @@ stockstudy/
 - 异步处理数据请求
 - 启用响应压缩
 
-## 部署说明
+## CloudBase开发环境部署说明
 
-### 开发环境部署
+### 本地开发环境
 ```bash
 # 使用开发模式
 start-dev.bat
@@ -228,14 +228,31 @@ start-dev.bat
 docker-compose -f docker-compose.dev.yml up
 ```
 
-### 生产环境部署
+### CloudBase开发环境部署
 ```bash
-# 使用生产模式
-start.bat
+# 部署到CloudBase开发环境
+tcb framework deploy
 
-# 或手动部署
-docker-compose up -d
+# 开发环境访问地址
+# 前端: https://stockstudy-dev-7gg0qgesca10330c-1251378228.tcloudbaseapp.com/
+# 后端: https://stockstudy-backend-dev-{id}.sh.run.tcloudbase.com/api/
 ```
+
+### 环境配置说明
+
+**配置变更记录 (v2.1 - 2025-12-14):**
+- 调整为单一开发环境配置，简化部署流程
+- 统一使用 `cloudbaserc.json` 配置文件
+- 移除多环境复杂度，专注于开发调试需求
+
+#### 环境变量配置
+- **本地开发**: 使用默认环境变量 (localhost:8000)
+- **CloudBase开发环境**: 使用统一配置文件 (cloudbaserc.json)
+
+#### API连接配置
+前端应用会根据环境自动调整API连接地址：
+- 本地开发: http://localhost:8000
+- CloudBase开发环境: 开发环境后端地址
 
 ## 贡献指南
 

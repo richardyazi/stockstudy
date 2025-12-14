@@ -1,28 +1,38 @@
-# 部署说明 - CloudBase云托管
+# 部署说明 - CloudBase云托管（开发环境）
 
 ## 🎯 部署策略
 
-**核心规则：CloudBase默认采用FastAPI+云托管的方式部署后端服务**
+**核心规则：CloudBase采用单一开发环境部署策略，简化配置和维护复杂度**
+
+**版本变更记录：**
+- **v2.1 (2025-12-14)**: 调整为单一开发环境配置，移除多环境复杂度
+- **v2.0**: 初始版本，支持多环境部署
 
 ## 📦 部署架构
 
-### 后端部署方案
+### 单一开发环境部署方案
 
-| 部署方式 | 适用场景 | 技术栈 | 优势 |
-|---------|---------|--------|------|
-| **CloudBase云托管（默认）** | 生产环境 | FastAPI + Python + Docker | 自动扩缩容、高可用、按量付费 |
-| 本地Docker部署 | 开发测试 | FastAPI + Python + Docker | 本地开发调试 |
-| 云函数部署 | 备选方案 | Node.js + Express | 轻量级、快速部署 |
+| 部署方式 | 适用场景 | 技术栈 | 配置文件 | 部署命令 |
+|---------|---------|--------|----------|----------|
+| **CloudBase开发环境** | 团队协作开发 | FastAPI + Python + Docker | cloudbaserc.json | tcb framework deploy |
+| 本地Docker部署 | 个人开发测试 | FastAPI + Python + Docker | docker-compose.yml | docker-compose up |
 
-## 🚀 CloudBase云托管部署
+**架构变更说明：**
+- 移除生产环境配置，统一使用开发环境
+- 简化配置文件管理，统一使用 `cloudbaserc.json`
+- 优化资源配置，更适合开发调试需求
 
-### 服务配置
+## 🚀 CloudBase开发环境部署
+
+### 开发环境配置
 
 **基本信息**
-- **服务名称**: `stockstudy-backend`
-- **环境ID**: `stockstudy-7gg0qgesca10330c`
-- **访问地址**: `https://stockstudy-backend-207775-4-1251378228.sh.run.tcloudbase.com`
+- **服务名称**: `stockstudy-backend-dev`
+- **环境ID**: `stockstudy-dev-7gg0qgesca10330c`
+- **访问地址**: `https://stockstudy-backend-dev-{id}.sh.run.tcloudbase.com`
 - **服务类型**: 容器型云托管
+- **配置文件**: `cloudbaserc.json`
+- **配置版本**: v2.1 (2025-12-14)
 
 **技术规格**
 - **运行时**: Python 3.8+ (基于Dockerfile)
@@ -30,6 +40,12 @@
 - **内存**: 0.5GB
 - **实例数**: 最小1个，最大2个
 - **端口**: 8000
+
+**开发环境特性**
+- **调试模式**: 启用DEBUG模式，便于问题排查
+- **缓存时间**: 1800秒，适合开发调试需求
+- **内存配置**: 256MB，优化开发资源使用
+- **环境变量**: 包含开发专用配置，支持调试功能
 
 **访问配置**
 - **访问类型**: 公网访问 (PUBLIC)
@@ -64,40 +80,45 @@ GET /api/stock/search
   - query: 搜索关键词
 ```
 
-## 🔧 部署流程
+## 🔧 开发环境部署流程
 
 ### 首次部署
 
 1. **环境准备**
    ```bash
-   # 确保CloudBase环境已创建
-   # 环境ID: stockstudy-7gg0qgesca10330c
+   # 创建CloudBase开发环境（首次部署）
+   # 环境ID: stockstudy-dev-7gg0qgesca10330c
    ```
 
 2. **后端部署**
    ```bash
-   # 使用CloudBase云托管部署
-   # 服务将自动构建并部署到云端
+   # 使用CloudBase云托管部署开发环境
+   tcb framework deploy
    ```
 
 3. **验证部署**
    ```bash
-   # 测试健康检查接口
-   curl https://stockstudy-backend-207775-4-1251378228.sh.run.tcloudbase.com/api/health
+   # 测试开发环境健康检查接口
+   curl https://stockstudy-backend-dev-{id}.sh.run.tcloudbase.com/api/health
    ```
 
 ### 更新部署
 
 1. **代码更新后重新部署**
    ```bash
-   # CloudBase会自动检测代码变更
-   # 重新构建并部署新版本
+   # 代码更新后重新部署开发环境
+   tcb framework deploy
    ```
 
 2. **版本管理**
-   - 每个部署都会创建新版本
    - 支持版本回滚
    - 自动流量切换
+   - 简化部署流程，无需环境切换
+
+**部署流程变更说明：**
+- 移除多环境部署复杂度，统一使用单一开发环境
+- 简化部署命令，无需配置文件参数
+- 优化验证流程，专注于开发环境功能测试
 
 ## 📊 监控和日志
 

@@ -1,246 +1,122 @@
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { KLineChart } from '@/components/charts/KLineChart'
-import { VolumeChart } from '@/components/charts/VolumeChart'
-import { KDJChart } from '@/components/charts/KDJChart'
-import { MACDChart } from '@/components/charts/MACDChart'
-import { StockStats } from '@/components/StockStats'
-import { formatDate } from '@/lib/utils'
+import React, { useState } from 'react';
+import { StockSelector } from './components/StockSelector';
+import { DateSelector } from './components/DateSelector';
+import { ChartContainer } from './components/ChartContainer';
+import { getStockData, healthCheck } from './services/apiService';
+import type { StockData } from './types/stock';
 
-interface StockData {
-  date: string
-  open: number
-  high: number
-  low: number
-  close: number
-  volume: number
-  kdj?: { k: number; d: number; j: number }
-  mavol5?: number
-  mavol10?: number
-  mavol100?: number
-}
+export default function App() {
+  const [selectedStock, setSelectedStock] = useState<string>('');
+  const [divideDate, setDivideDate] = useState<Date | null>(null);
+  const [stockData, setStockData] = useState<StockData | null>(null);
+  const [loading, setLoading] = useState(false);
 
-function App() {
-  const [stockCode, setStockCode] = useState('000001')
-  const [dividingDate, setDividingDate] = useState('2024-01-01')
-  const [stockData, setStockData] = useState<StockData[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [selectedIndicator, setSelectedIndicator] = useState('volume') // 默认显示成交量
-  const [showMA, setShowMA] = useState(true)
-  const [showVolumeMA, setShowVolumeMA] = useState(true)
+  const handleStockChange = (stockCode: string) => {
+    setSelectedStock(stockCode);
+    if (stockCode && divideDate) {
+      loadStockData(stockCode, divideDate);
+    }
+  };
 
-  const fetchStockData = async () => {
-    setLoading(true)
-    setError(null)
-    
+  const handleDateChange = (date: Date | null) => {
+    setDivideDate(date);
+    if (selectedStock && date) {
+      loadStockData(selectedStock, date);
+    }
+  };
+
+  const loadStockData = async (stockCode: string, date: Date) => {
+    setLoading(true);
     try {
-      // 使用环境变量配置的API地址，并添加/api前缀
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
-      const apiPath = baseUrl.includes('localhost') ? '' : '/api'
-      const response = await fetch(`${baseUrl}${apiPath}/stock/${stockCode}?dividing_date=${dividingDate}`)
+      // 检查后端服务是否健康
+      const isHealthy = await healthCheck();
+      if (!isHealthy) {
+        throw new Error('后端服务不可用，请确保后端服务已启动');
+      }
+
+      // 通过API获取真实股票数据
+      const data = await getStockData(stockCode, date);
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+      if (!data) {
+        throw new Error('获取股票数据失败，请检查股票代码和日期');
       }
       
-      const data = await response.json()
-      
-      // 合并历史数据和未来数据
-      const allData = [...data.historical_data, ...data.future_data]
-      setStockData(allData)
-    } catch (err) {
-      setError('获取股票数据失败，请检查网络连接或股票代码')
-      console.error('Error fetching stock data:', err)
+      setStockData(data);
+    } catch (error) {
+      console.error('加载股票数据失败:', error);
+      setStockData(null);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
-
-  useEffect(() => {
-    fetchStockData()
-  }, [])
-
-  const historicalData = stockData.filter(item => item.date < dividingDate)
-  const futureData = stockData.filter(item => item.date >= dividingDate)
+  };
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* 页面标题 */}
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-foreground mb-2">股票趋势练习网站</h1>
-          <p className="text-muted-foreground">以特定日期为分界点，分析股票历史走势和未来趋势</p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="container mx-auto px-4 py-8">
+        {/* 头部 */}
+        <header className="mb-8">
+          <h1 className="text-4xl mb-2 text-slate-800">
+            📈 股票趋势练习平台
+          </h1>
+          <p className="text-slate-600">
+            选择股票和分界点日期，对比分析历史走势与未来趋势
+          </p>
+        </header>
 
         {/* 控制面板 */}
-        <Card>
-          <CardHeader>
-            <CardTitle>股票选择与时间分界点</CardTitle>
-            <CardDescription>输入股票代码和分界日期，开始分析</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="stock-code">股票代码</Label>
-                <Input
-                  id="stock-code"
-                  placeholder="例如：000001"
-                  value={stockCode}
-                  onChange={(e) => setStockCode(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="dividing-date">分界日期</Label>
-                <Input
-                  id="dividing-date"
-                  type="date"
-                  value={dividingDate}
-                  onChange={(e) => setDividingDate(e.target.value)}
-                />
-              </div>
-              <div className="flex items-end">
-                <Button onClick={fetchStockData} disabled={loading} className="w-full">
-                  {loading ? '加载中...' : '开始分析'}
-                </Button>
-              </div>
-            </div>
-            
-            {/* 技术指标选择 */}
-            {stockData.length > 0 && (
-              <div className="mt-6 pt-6 border-t border-border">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="space-y-2">
-                    <Label>技术指标</Label>
-                    <div className="flex space-x-2">
-                      <Button
-                        variant={selectedIndicator === 'volume' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setSelectedIndicator('volume')}
-                      >
-                        成交量
-                      </Button>
-                      <Button
-                        variant={selectedIndicator === 'kdj' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setSelectedIndicator('kdj')}
-                      >
-                        KDJ
-                      </Button>
-                      <Button
-                        variant={selectedIndicator === 'macd' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setSelectedIndicator('macd')}
-                      >
-                        MACD
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>移动平均线</Label>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="show-ma"
-                        checked={showMA}
-                        onChange={(e) => setShowMA(e.target.checked)}
-                        className="w-4 h-4"
-                      />
-                      <Label htmlFor="show-ma" className="text-sm">显示MA</Label>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>成交量指标</Label>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="show-volume-ma"
-                        checked={showVolumeMA}
-                        onChange={(e) => setShowVolumeMA(e.target.checked)}
-                        className="w-4 h-4"
-                      />
-                      <Label htmlFor="show-volume-ma" className="text-sm">显示MAVOL</Label>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>图表设置</Label>
-                    <div className="flex space-x-2">
-                      <Button variant="outline" size="sm" onClick={() => {
-                        // 重置缩放功能
-                        window.location.reload()
-                      }}>
-                        重置
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <StockSelector
+              value={selectedStock}
+              onChange={handleStockChange}
+            />
+            <DateSelector
+              value={divideDate}
+              onChange={handleDateChange}
+            />
+          </div>
 
-        {error && (
-          <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded">
-            {error}
+          {selectedStock && divideDate && (
+            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-blue-800">
+                <span className="font-semibold">当前选择：</span>
+                {selectedStock} | 分界点：{divideDate.toLocaleDateString('zh-CN')}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* 图表区域 */}
+        {loading && (
+          <div className="bg-white rounded-xl shadow-lg p-12 text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+            <p className="mt-4 text-slate-600">加载数据中...</p>
           </div>
         )}
 
-        {stockData.length > 0 && (
-          <>
-            {/* 分界点前走势 */}
-            <Card>
-              <CardHeader>
-                <CardTitle>分界点前走势 ({formatDate(new Date(dividingDate))} 之前)</CardTitle>
-                <CardDescription>历史价格走势和技术指标分析</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <KLineChart data={historicalData} height={400} showMA={showMA} />
-                
-                {/* 动态显示技术指标 */}
-                {selectedIndicator === 'volume' && (
-                  <VolumeChart data={historicalData} height={200} showVolumeMA={showVolumeMA} />
-                )}
-                {selectedIndicator === 'kdj' && (
-                  <KDJChart data={historicalData} height={200} />
-                )}
-                {selectedIndicator === 'macd' && (
-                  <MACDChart data={historicalData} height={200} />
-                )}
-              </CardContent>
-            </Card>
+        {!loading && stockData && (
+          <ChartContainer data={stockData} divideDate={divideDate!} />
+        )}
 
-            {/* 分界点后走势 */}
-            <Card>
-              <CardHeader>
-                <CardTitle>分界点后走势 ({formatDate(new Date(dividingDate))} 及之后)</CardTitle>
-                <CardDescription>未来趋势预测和技术指标分析</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <KLineChart data={futureData} height={400} showMA={showMA} />
-                
-                {/* 动态显示技术指标 */}
-                {selectedIndicator === 'volume' && (
-                  <VolumeChart data={futureData} height={200} showVolumeMA={showVolumeMA} />
-                )}
-                {selectedIndicator === 'kdj' && (
-                  <KDJChart data={futureData} height={200} />
-                )}
-                {selectedIndicator === 'macd' && (
-                  <MACDChart data={futureData} height={200} />
-                )}
-              </CardContent>
-            </Card>
+        {!loading && !stockData && selectedStock && divideDate && (
+          <div className="bg-white rounded-xl shadow-lg p-12 text-center">
+            <p className="text-slate-600">数据加载失败，请重试</p>
+          </div>
+        )}
 
-            {/* 数据统计面板 */}
-            <StockStats historicalData={historicalData} futureData={futureData} />
-          </>
+        {!selectedStock && !divideDate && (
+          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+            <p className="text-slate-400 mb-4">
+              请选择股票代码和分界点日期以开始分析
+            </p>
+            <div className="text-sm text-slate-500 space-y-1">
+              <p>• 输入股票代码后，请从下拉列表中选择</p>
+              <p>• 选择有效的分界点日期</p>
+              <p>• 两个条件都满足后自动开始分析</p>
+            </div>
+          </div>
         )}
       </div>
     </div>
-  )
+  );
 }
-
-export default App

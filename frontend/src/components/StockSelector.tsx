@@ -2,36 +2,69 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
 import type { StockOption } from '../types/stock';
 import { searchStocks } from '../services/apiService';
-
-// 模拟股票数据库
-const STOCK_LIST: StockOption[] = [
-  { code: '000001', name: '平安银行', label: '000001[平安银行]' },
-  { code: '000002', name: '万科A', label: '000002[万科A]' },
-  { code: '000063', name: '中兴通讯', label: '000063[中兴通讯]' },
-  { code: '000333', name: '美的集团', label: '000333[美的集团]' },
-  { code: '000858', name: '五粮液', label: '000858[五粮液]' },
-  { code: '600000', name: '浦发银行', label: '600000[浦发银行]' },
-  { code: '600036', name: '招商银行', label: '600036[招商银行]' },
-  { code: '600519', name: '贵州茅台', label: '600519[贵州茅台]' },
-  { code: '600887', name: '伊利股份', label: '600887[伊利股份]' },
-  { code: '601318', name: '中国平安', label: '601318[中国平安]' },
-  { code: '601398', name: '工商银行', label: '601398[工商银行]' },
-  { code: '601888', name: '中国中免', label: '601888[中国中免]' },
-];
+import { loadStockConfig, DEFAULT_STOCK_LIST } from '../utils/stockConfigLoader';
 
 interface StockSelectorProps {
   value: string;
   onChange: (stockCode: string) => void;
+  /** 股票选项列表，支持自定义配置 */
+  stockOptions?: StockOption[];
+  /** 是否显示股票代码 */
+  showCode?: boolean;
+  /** 占位符文本 */
+  placeholder?: string;
+  /** 配置文件路径，支持自定义 */
+  configPath?: string;
 }
 
-export function StockSelector({ onChange }: StockSelectorProps) {
+export function StockSelector({ 
+  onChange, 
+  stockOptions,
+  showCode = true,
+  placeholder = '输入股票代码或名称...',
+  configPath
+}: StockSelectorProps) {
   const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState<StockOption[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [loading, setLoading] = useState(false);
+  const [stockList, setStockList] = useState<StockOption[]>([]);
+  const [configLoaded, setConfigLoaded] = useState(false);
+  const [configError, setConfigError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  // 加载股票配置数据
+  useEffect(() => {
+    const loadStockData = async () => {
+      try {
+        setLoading(true);
+        setConfigError(null);
+        
+        // 优先使用传入的股票选项，否则从配置文件加载
+        if (stockOptions && stockOptions.length > 0) {
+          setStockList(stockOptions);
+          setConfigLoaded(true);
+          return;
+        }
+        
+        const loadedStocks = await loadStockConfig(configPath);
+        setStockList(loadedStocks);
+        setConfigLoaded(true);
+        
+      } catch (error) {
+        console.error('加载股票配置失败:', error);
+        setConfigError('股票配置加载失败，使用默认股票列表');
+        setStockList(DEFAULT_STOCK_LIST);
+        setConfigLoaded(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadStockData();
+  }, [stockOptions, configPath]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -85,8 +118,8 @@ export function StockSelector({ onChange }: StockSelectorProps) {
     const val = e.target.value;
     setInputValue(val);
 
-    if (val.trim()) {
-      const filtered = STOCK_LIST.filter(
+    if (val.trim() && stockList.length > 0) {
+      const filtered = stockList.filter(
         (stock) =>
           stock.code.includes(val) ||
           stock.name.includes(val) ||
@@ -143,12 +176,24 @@ export function StockSelector({ onChange }: StockSelectorProps) {
 
   return (
     <div className="relative">
-      <label className="block mb-2 text-slate-700">
-        股票代码/名称
-      </label>
+      <div className="flex items-center justify-between mb-2">
+        <label className="text-slate-700">
+          股票代码/名称
+        </label>
+        {configError && (
+          <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded">
+            {configError}
+          </span>
+        )}
+      </div>
+      
       <div className="relative">
         <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-          <Search size={20} />
+          {loading ? (
+            <div className="w-5 h-5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <Search size={20} />
+          )}
         </div>
         <input
           ref={inputRef}
@@ -161,8 +206,9 @@ export function StockSelector({ onChange }: StockSelectorProps) {
               setShowSuggestions(true);
             }
           }}
-          placeholder="输入股票代码或名称..."
-          className="w-full pl-10 pr-10 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+          placeholder={placeholder}
+          disabled={!configLoaded || loading}
+          className="w-full pl-10 pr-10 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all disabled:bg-slate-100 disabled:cursor-not-allowed"
         />
         {inputValue && (
           <button
@@ -197,7 +243,9 @@ export function StockSelector({ onChange }: StockSelectorProps) {
             >
               <div className="flex items-center justify-between">
                 <span className="text-slate-800">{stock.label}</span>
-                <span className="text-slate-400 text-sm">{stock.code}</span>
+                {showCode && (
+                  <span className="text-slate-400 text-sm">{stock.code}</span>
+                )}
               </div>
             </button>
           ))}

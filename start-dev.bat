@@ -83,7 +83,7 @@ tasklist /fi "imagename eq node.exe" /fo csv | findstr /i "vite" >nul
 if not errorlevel 1 (
     echo ℹ️ 前端服务已在运行
 ) else (
-    start "股票趋势分析 - 前端开发" cmd /k "cd /d "%~dp0frontend" && npm run dev"
+    start "股票趋势分析 - 前端开发" cmd /k "cd /d "%~dp0frontend" && powershell -ExecutionPolicy Bypass -Command \"npm run dev\""
     echo ✅ 前端开发服务器已启动（端口3000）
 )
 cd ..

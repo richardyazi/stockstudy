@@ -63,11 +63,11 @@ if errorlevel 1 (
 echo.
 echo 📦 安装前端依赖...
 cd frontend
-npm ci
+powershell -ExecutionPolicy Bypass -Command "npm ci"
 
 if errorlevel 1 (
     echo ⚠️ 前端依赖安装失败，尝试使用npm install...
-    npm install
+    powershell -ExecutionPolicy Bypass -Command "npm install"
     if errorlevel 1 (
         echo ❌ 前端依赖安装失败
         pause

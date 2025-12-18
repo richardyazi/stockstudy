@@ -32,7 +32,7 @@ echo.
 
 echo Installing frontend dependencies...
 cd frontend
-npm install
+powershell -ExecutionPolicy Bypass -Command "npm install"
 
 if errorlevel 1 (
     echo ERROR: Failed to install frontend dependencies

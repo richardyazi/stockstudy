@@ -109,12 +109,9 @@ export function StockSelector({ value, onChange }: StockSelectorProps) {
 
   return (
     <div className="relative">
-      <label className="block mb-2 text-slate-700">
-        股票代码/名称
-      </label>
       <div className="relative">
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-          <Search size={20} />
+        <div className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400">
+          <Search size={16} />
         </div>
         <input
           ref={inputRef}
@@ -127,15 +124,15 @@ export function StockSelector({ value, onChange }: StockSelectorProps) {
               setShowSuggestions(true);
             }
           }}
-          placeholder="输入股票代码或名称..."
-          className="w-full pl-10 pr-10 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+          placeholder="股票代码/名称"
+          className="w-full pl-8 pr-7 py-1.5 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
         />
         {inputValue && (
           <button
             onClick={handleClear}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
           >
-            <X size={20} />
+            <X size={14} />
           </button>
         )}
       </div>
@@ -143,19 +140,19 @@ export function StockSelector({ value, onChange }: StockSelectorProps) {
       {showSuggestions && suggestions.length > 0 && (
         <div
           ref={suggestionsRef}
-          className="absolute z-10 w-full mt-2 bg-white border border-slate-200 rounded-lg shadow-xl max-h-64 overflow-y-auto"
+          className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-xl max-h-64 overflow-y-auto"
         >
           {suggestions.map((stock, index) => (
             <button
               key={stock.code}
               onClick={() => handleSelectStock(stock)}
-              className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${
+              className={`w-full px-3 py-2 text-left hover:bg-blue-50 transition-colors ${
                 index === selectedIndex ? 'bg-blue-50' : ''
               } ${index !== suggestions.length - 1 ? 'border-b border-slate-100' : ''}`}
             >
               <div className="flex items-center justify-between">
-                <span className="text-slate-800">{stock.label}</span>
-                <span className="text-slate-400 text-sm">{stock.code}</span>
+                <span className="text-sm text-slate-800">{stock.label}</span>
+                <span className="text-slate-400 text-xs">{stock.code}</span>
               </div>
             </button>
           ))}

@@ -42,12 +42,9 @@ export function DateSelector({ value, onChange }: DateSelectorProps) {
 
   return (
     <div className="relative">
-      <label className="block mb-2 text-slate-700">
-        分界点日期
-      </label>
       <div className="relative">
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-          <Calendar size={20} />
+        <div className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400">
+          <Calendar size={16} />
         </div>
         <input
           type="date"
@@ -55,12 +52,9 @@ export function DateSelector({ value, onChange }: DateSelectorProps) {
           onChange={handleInputChange}
           min={minDate}
           max={maxDate}
-          className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+          className="w-full pl-8 pr-3 py-1.5 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
         />
       </div>
-      <p className="mt-2 text-sm text-slate-500">
-        选择一个日期作为历史与未来的分界点
-      </p>
     </div>
   );
 }

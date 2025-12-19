@@ -28,147 +28,122 @@ export function ChartContainer({ data, divideDate }: ChartContainerProps) {
       : [...historicalData.slice(-50), ...futureData.slice(0, 50)];
 
   return (
-    <div className="space-y-6">
-      {/* 控制栏 */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          {/* 视图切换 */}
+    <div className="h-full bg-white flex flex-col">
+      {/* 紧凑控制栏 */}
+      <div className="border-b border-slate-200 px-4 py-2 flex-shrink-0">
+        <div className="flex items-center justify-between gap-4">
+          {/* 左侧：视图切换 */}
           <div className="flex gap-2">
             <button
               onClick={() => setViewMode('historical')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded transition-all ${
                 viewMode === 'historical'
-                  ? 'bg-blue-500 text-white shadow-md'
+                  ? 'bg-blue-500 text-white'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
-              <TrendingDown size={18} />
+              <TrendingDown size={14} />
               <span>历史走势</span>
             </button>
             <button
               onClick={() => setViewMode('future')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded transition-all ${
                 viewMode === 'future'
-                  ? 'bg-green-500 text-white shadow-md'
+                  ? 'bg-green-500 text-white'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
-              <TrendingUp size={18} />
+              <TrendingUp size={14} />
               <span>未来走势</span>
             </button>
             <button
               onClick={() => setViewMode('compare')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded transition-all ${
                 viewMode === 'compare'
-                  ? 'bg-purple-500 text-white shadow-md'
+                  ? 'bg-purple-500 text-white'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
-              <BarChart3 size={18} />
+              <BarChart3 size={14} />
               <span>对比模式</span>
             </button>
           </div>
 
-          {/* 时间周期选择 */}
-          <div className="flex gap-2">
-            <button
-              onClick={() => setTimeRange('day')}
-              className={`px-4 py-2 rounded-lg transition-all ${
-                timeRange === 'day'
-                  ? 'bg-slate-700 text-white'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-            >
-              日线
-            </button>
-            <button
-              onClick={() => setTimeRange('week')}
-              className={`px-4 py-2 rounded-lg transition-all ${
-                timeRange === 'week'
-                  ? 'bg-slate-700 text-white'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-            >
-              周线
-            </button>
-            <button
-              onClick={() => setTimeRange('month')}
-              className={`px-4 py-2 rounded-lg transition-all ${
-                timeRange === 'month'
-                  ? 'bg-slate-700 text-white'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-            >
-              月线
-            </button>
-          </div>
-        </div>
+          {/* 右侧：时间周期和统计信息 */}
+          <div className="flex items-center gap-4">
+            {/* 统计信息 */}
+            <div className="flex items-center gap-4 text-xs text-slate-600">
+              <span>{data.stockCode} {data.stockName}</span>
+              <span>历史: {historicalData.length}天</span>
+              <span>未来: {futureData.length}天</span>
+            </div>
+            
+            {/* 分隔线 */}
+            <div className="h-6 w-px bg-slate-300"></div>
 
-        {/* 数据统计 */}
-        <div className="mt-4 pt-4 border-t border-slate-200">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div>
-              <p className="text-sm text-slate-500">股票代码</p>
-              <p className="mt-1">
-                {data.stockCode}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-slate-500">股票名称</p>
-              <p className="mt-1">{data.stockName}</p>
-            </div>
-            <div>
-              <p className="text-sm text-slate-500">历史数据点</p>
-              <p className="mt-1">{historicalData.length} 天</p>
-            </div>
-            <div>
-              <p className="text-sm text-slate-500">未来数据点</p>
-              <p className="mt-1">{futureData.length} 天</p>
+            {/* 时间周期 */}
+            <div className="flex gap-1">
+              <button
+                onClick={() => setTimeRange('day')}
+                className={`px-3 py-1 text-xs rounded transition-all ${
+                  timeRange === 'day'
+                    ? 'bg-slate-700 text-white'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
+              >
+                日线
+              </button>
+              <button
+                onClick={() => setTimeRange('week')}
+                className={`px-3 py-1 text-xs rounded transition-all ${
+                  timeRange === 'week'
+                    ? 'bg-slate-700 text-white'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
+              >
+                周线
+              </button>
+              <button
+                onClick={() => setTimeRange('month')}
+                className={`px-3 py-1 text-xs rounded transition-all ${
+                  timeRange === 'month'
+                    ? 'bg-slate-700 text-white'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
+              >
+                月线
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* K线图 */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h3 className="mb-4 flex items-center gap-2 text-slate-800">
-          <BarChart3 size={20} />
-          <span>K线图与均线指标</span>
-          {viewMode === 'compare' && (
-            <span className="ml-2 px-2 py-1 bg-purple-100 text-purple-700 text-sm rounded">
-              分界点: {divideDate.toLocaleDateString('zh-CN')}
-            </span>
-          )}
-        </h3>
-        <CandlestickChart
-          data={currentData}
-          divideDate={viewMode === 'compare' ? divideDate : undefined}
-          viewMode={viewMode}
-        />
-      </div>
+      {/* 图表区域 - 紧凑垂直布局 */}
+      <div className="flex-1 overflow-auto">
+        {/* K线图 */}
+        <div className="border-b border-slate-200 px-4 pt-2 pb-1">
+          <CandlestickChart
+            data={currentData}
+            divideDate={viewMode === 'compare' ? divideDate : undefined}
+            viewMode={viewMode}
+          />
+        </div>
 
-      {/* 成交量图 */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h3 className="mb-4 flex items-center gap-2 text-slate-800">
-          <BarChart3 size={20} />
-          <span>成交量</span>
-        </h3>
-        <VolumeChart
-          data={currentData}
-          divideDate={viewMode === 'compare' ? divideDate : undefined}
-        />
-      </div>
+        {/* 成交量图 */}
+        <div className="border-b border-slate-200 px-4 pt-2 pb-1">
+          <VolumeChart
+            data={currentData}
+            divideDate={viewMode === 'compare' ? divideDate : undefined}
+          />
+        </div>
 
-      {/* KDJ指标图 */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h3 className="mb-4 flex items-center gap-2 text-slate-800">
-          <BarChart3 size={20} />
-          <span>KDJ指标</span>
-        </h3>
-        <KDJChart
-          data={currentData}
-          divideDate={viewMode === 'compare' ? divideDate : undefined}
-        />
+        {/* KDJ指标图 */}
+        <div className="px-4 pt-2 pb-2">
+          <KDJChart
+            data={currentData}
+            divideDate={viewMode === 'compare' ? divideDate : undefined}
+          />
+        </div>
       </div>
     </div>
   );

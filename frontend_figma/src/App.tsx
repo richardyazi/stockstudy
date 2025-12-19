@@ -40,46 +40,57 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <div className="container mx-auto px-4 py-8">
-        {/* 头部 */}
-        <header className="mb-8">
-          <h1 className="text-4xl mb-2 text-slate-800">
-            📈 股票趋势练习平台
-          </h1>
-          <p className="text-slate-600">
-            选择股票和分界点日期，对比分析历史走势与未来趋势
-          </p>
-        </header>
-
-        {/* 控制面板 */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <StockSelector
-              value={selectedStock}
-              onChange={handleStockChange}
-            />
-            <DateSelector
-              value={divideDate}
-              onChange={handleDateChange}
-            />
+    <div className="h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col">
+      {/* 紧凑顶部控制栏 */}
+      <div className="bg-white shadow-sm border-b border-slate-200 px-3 py-2 flex-shrink-0">
+        <div className="flex items-center gap-3 flex-wrap">
+          {/* 标题 */}
+          <div className="flex items-center">
+            <h1 className="text-base text-slate-800">
+              📈 股票趋势练习
+            </h1>
           </div>
 
-          {selectedStock && divideDate && (
-            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-blue-800">
-                <span className="font-semibold">当前选择：</span>
-                {selectedStock} | 分界点：{divideDate.toLocaleDateString('zh-CN')}
-              </p>
-            </div>
-          )}
-        </div>
+          {/* 分隔线 */}
+          <div className="h-5 w-px bg-slate-300"></div>
 
-        {/* 图表区域 */}
+          {/* 控制区域 */}
+          <div className="flex items-center gap-2 flex-1">
+            <div className="w-52">
+              <StockSelector
+                value={selectedStock}
+                onChange={handleStockChange}
+              />
+            </div>
+            <div className="w-40">
+              <DateSelector
+                value={divideDate}
+                onChange={handleDateChange}
+              />
+            </div>
+            
+            {selectedStock && divideDate && (
+              <>
+                <div className="h-5 w-px bg-slate-300"></div>
+                <div className="text-xs text-slate-600">
+                  <span className="font-semibold">{selectedStock}</span>
+                  <span className="mx-1.5">|</span>
+                  <span>{divideDate.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })}</span>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* 图表区域 - 占据剩余空间 */}
+      <div className="flex-1 overflow-hidden">
         {loading && (
-          <div className="bg-white rounded-xl shadow-lg p-12 text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
-            <p className="mt-4 text-slate-600">加载数据中...</p>
+          <div className="h-full flex items-center justify-center">
+            <div>
+              <div className="inline-block animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent"></div>
+              <p className="mt-3 text-sm text-slate-600">加载数据中...</p>
+            </div>
           </div>
         )}
 
@@ -88,14 +99,14 @@ export default function App() {
         )}
 
         {!loading && !stockData && selectedStock && divideDate && (
-          <div className="bg-white rounded-xl shadow-lg p-12 text-center">
-            <p className="text-slate-600">数据加载失败，请重试</p>
+          <div className="h-full flex items-center justify-center">
+            <p className="text-sm text-slate-600">数据加载失败，请重试</p>
           </div>
         )}
 
         {!selectedStock && !divideDate && (
-          <div className="bg-white rounded-xl shadow-lg p-12 text-center">
-            <p className="text-slate-400">
+          <div className="h-full flex items-center justify-center">
+            <p className="text-sm text-slate-400">
               请选择股票代码和分界点日期以开始分析
             </p>
           </div>

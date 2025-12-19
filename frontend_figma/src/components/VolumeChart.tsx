@@ -93,16 +93,16 @@ export function VolumeChart({ data, divideDate }: VolumeChartProps) {
   };
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <ComposedChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+    <ResponsiveContainer width="100%" height={150}>
+      <ComposedChart data={chartData} margin={{ top: 5, right: 10, left: -15, bottom: 0 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-        <XAxis dataKey="date" tick={{ fontSize: 12 }} interval="preserveStartEnd" />
+        <XAxis dataKey="date" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
         <YAxis
-          tick={{ fontSize: 12 }}
+          tick={{ fontSize: 10 }}
           tickFormatter={(value) => `${(value / 10000).toFixed(0)}万`}
         />
         <Tooltip content={<CustomTooltip />} />
-        <Legend />
+        <Legend wrapperStyle={{ fontSize: '11px' }} />
 
         {/* 分界线 */}
         {divideDate && (
@@ -124,7 +124,7 @@ export function VolumeChart({ data, divideDate }: VolumeChartProps) {
           type="monotone"
           dataKey="vol5"
           stroke="#3b82f6"
-          strokeWidth={1.5}
+          strokeWidth={1}
           dot={false}
           name="VOL5"
           connectNulls
@@ -133,7 +133,7 @@ export function VolumeChart({ data, divideDate }: VolumeChartProps) {
           type="monotone"
           dataKey="vol10"
           stroke="#f97316"
-          strokeWidth={1.5}
+          strokeWidth={1}
           dot={false}
           name="VOL10"
           connectNulls
@@ -142,7 +142,7 @@ export function VolumeChart({ data, divideDate }: VolumeChartProps) {
           type="monotone"
           dataKey="vol100"
           stroke="#16a34a"
-          strokeWidth={1.5}
+          strokeWidth={1}
           dot={false}
           name="VOL100"
           connectNulls

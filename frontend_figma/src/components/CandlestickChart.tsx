@@ -156,63 +156,63 @@ export function CandlestickChart({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-1">
       {/* 均线控制 */}
-      <div className="flex flex-wrap gap-2">
-        <label className="flex items-center gap-2 px-3 py-1 bg-slate-100 rounded cursor-pointer hover:bg-slate-200 transition-colors">
+      <div className="flex flex-wrap gap-1.5">
+        <label className="flex items-center gap-1.5 px-2 py-0.5 text-xs bg-slate-100 rounded cursor-pointer hover:bg-slate-200 transition-colors">
           <input
             type="checkbox"
             checked={showMA.ma5}
             onChange={(e) => setShowMA({ ...showMA, ma5: e.target.checked })}
-            className="rounded"
+            className="rounded w-3 h-3"
           />
-          <span className="text-sm">MA5</span>
-          <div className="w-6 h-0.5 bg-blue-500"></div>
+          <span>MA5</span>
+          <div className="w-4 h-0.5 bg-blue-500"></div>
         </label>
-        <label className="flex items-center gap-2 px-3 py-1 bg-slate-100 rounded cursor-pointer hover:bg-slate-200 transition-colors">
+        <label className="flex items-center gap-1.5 px-2 py-0.5 text-xs bg-slate-100 rounded cursor-pointer hover:bg-slate-200 transition-colors">
           <input
             type="checkbox"
             checked={showMA.ma10}
             onChange={(e) => setShowMA({ ...showMA, ma10: e.target.checked })}
-            className="rounded"
+            className="rounded w-3 h-3"
           />
-          <span className="text-sm">MA10</span>
-          <div className="w-6 h-0.5 bg-orange-500"></div>
+          <span>MA10</span>
+          <div className="w-4 h-0.5 bg-orange-500"></div>
         </label>
-        <label className="flex items-center gap-2 px-3 py-1 bg-slate-100 rounded cursor-pointer hover:bg-slate-200 transition-colors">
+        <label className="flex items-center gap-1.5 px-2 py-0.5 text-xs bg-slate-100 rounded cursor-pointer hover:bg-slate-200 transition-colors">
           <input
             type="checkbox"
             checked={showMA.ma20}
             onChange={(e) => setShowMA({ ...showMA, ma20: e.target.checked })}
-            className="rounded"
+            className="rounded w-3 h-3"
           />
-          <span className="text-sm">MA20</span>
-          <div className="w-6 h-0.5 bg-purple-500"></div>
+          <span>MA20</span>
+          <div className="w-4 h-0.5 bg-purple-500"></div>
         </label>
-        <label className="flex items-center gap-2 px-3 py-1 bg-slate-100 rounded cursor-pointer hover:bg-slate-200 transition-colors">
+        <label className="flex items-center gap-1.5 px-2 py-0.5 text-xs bg-slate-100 rounded cursor-pointer hover:bg-slate-200 transition-colors">
           <input
             type="checkbox"
             checked={showMA.ma60}
             onChange={(e) => setShowMA({ ...showMA, ma60: e.target.checked })}
-            className="rounded"
+            className="rounded w-3 h-3"
           />
-          <span className="text-sm">MA60</span>
-          <div className="w-6 h-0.5 bg-green-600"></div>
+          <span>MA60</span>
+          <div className="w-4 h-0.5 bg-green-600"></div>
         </label>
       </div>
 
       {/* 图表 */}
-      <ResponsiveContainer width="100%" height={400}>
-        <ComposedChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+      <ResponsiveContainer width="100%" height={350}>
+        <ComposedChart data={chartData} margin={{ top: 5, right: 10, left: -15, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
           <XAxis
             dataKey="date"
-            tick={{ fontSize: 12 }}
+            tick={{ fontSize: 10 }}
             interval="preserveStartEnd"
           />
-          <YAxis domain={['auto', 'auto']} tick={{ fontSize: 12 }} />
+          <YAxis domain={['auto', 'auto']} tick={{ fontSize: 10 }} />
           <Tooltip content={<CustomTooltip />} />
-          <Legend />
+          <Legend wrapperStyle={{ fontSize: '11px' }} />
 
           {/* 分界线 */}
           {divideDate && viewMode === 'compare' && (
@@ -223,7 +223,7 @@ export function CandlestickChart({
               stroke="#8b5cf6"
               strokeWidth={2}
               strokeDasharray="5 5"
-              label={{ value: '分界点', position: 'top', fill: '#8b5cf6' }}
+              label={{ value: '分界点', position: 'top', fill: '#8b5cf6', fontSize: 11 }}
             />
           )}
 
